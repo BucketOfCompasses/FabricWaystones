@@ -166,6 +166,10 @@ public final class Config {
         return configData.getCompound("teleportation_cooldown").getInt("cooldown_ticks_from_waystone");
     }
 
+    public SearchType getSearchAtPosition() {
+        return SearchType.fromConfigValue(configData.getCompound("compass").getString("search_at_position"));
+    }
+
     public int getIntOrDefault(NbtCompound getFrom, String key, NbtCompound defaults) {
         if (getFrom.contains(key)) {
             return getFrom.getInt(key);
@@ -250,6 +254,10 @@ public final class Config {
     private NbtCompound getDefaults() {
         NbtCompound defaultConfig = new NbtCompound();
 
+        NbtCompound compass = new NbtCompound();
+        compass.putString("search_at_position", SearchType.CONTAINS.getConfigValue());
+        defaultConfig.put("compass", compass);
+
         NbtCompound worldgen = new NbtCompound();
         worldgen.putBoolean("generate_in_villages", true);
         worldgen.putInt("min_per_village", 1);
@@ -303,6 +311,11 @@ public final class Config {
         JsonObject json = new JsonObject();
 
         NbtCompound defaults = getDefaults();
+
+        JsonObject compassJson = new JsonObject();
+        NbtCompound compassTag = getCompoundOrDefault(tag, "compass", defaults);
+        compassJson .addProperty("search_at_position", getStringOrDefault(compassTag, "search_at_position", defaults));
+        json.add("compass", compassJson);
 
         JsonObject worldgenJson = new JsonObject();
         NbtCompound worldgenTag = getCompoundOrDefault(tag, "worldgen", defaults);
@@ -516,5 +529,4 @@ public final class Config {
             }
         }
     }
-
 }

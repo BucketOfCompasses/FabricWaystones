@@ -19,6 +19,8 @@ import wraith.waystones.access.PlayerAccess;
 import wraith.waystones.access.PlayerEntityMixinAccess;
 import wraith.waystones.mixin.ClientPlayerEntityAccessor;
 import wraith.waystones.mixin.ServerPlayerEntityAccessor;
+import wraith.waystones.util.Config;
+import wraith.waystones.util.SearchType;
 import wraith.waystones.util.Utils;
 import wraith.waystones.util.WaystonePacketHandler;
 
@@ -31,7 +33,7 @@ public abstract class UniversalWaystoneScreenHandler extends ScreenHandler {
     protected ArrayList<String> sortedWaystones = new ArrayList<>();
     protected ArrayList<String> filteredWaystones = new ArrayList<>();
     protected String filter = "";
-    private SearchType searchType = SearchType.STARTS_WITH;
+    private SearchType searchType = Config.getInstance().getSearchAtPosition();
 
     protected UniversalWaystoneScreenHandler(
         ScreenHandlerType<? extends UniversalWaystoneScreenHandler> type, int syncId,
@@ -173,10 +175,4 @@ public abstract class UniversalWaystoneScreenHandler extends ScreenHandler {
             "waystones.gui." + (this.searchType == SearchType.CONTAINS ? "contains"
                 : "starts_with"));
     }
-
-    enum SearchType {
-        CONTAINS,
-        STARTS_WITH
-    }
-
 }
