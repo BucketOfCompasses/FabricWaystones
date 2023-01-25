@@ -211,10 +211,8 @@ public class UniversalWaystoneScreen extends HandledScreen<ScreenHandler> {
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-
         super.render(matrices, mouseX, mouseY, delta);
         this.drawMouseoverTooltip(matrices, mouseX, mouseY);
-        MinecraftClient.getInstance().options.guiScale = originalScale;
     }
 
     protected void renderCostItem(MatrixStack matrices, int x, int y) {
