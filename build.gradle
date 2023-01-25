@@ -11,11 +11,28 @@ version = project.mod_version + "+mc" + project.minecraft_version
 group = project.maven_group
 
 repositories {
-	maven { url = "https://www.cursemaven.com" }
-    maven {
-        name = "JourneyMap (Public)"
-        url = "https://jm.gserv.me/repository/maven-public/"
-    }
+	exclusiveContent  {
+		forRepository {
+			maven {
+				name = "CurseMaven"
+				url = "https://www.cursemaven.com"
+			}
+		}
+		filter {
+			includeGroup("curse.maven")
+		}
+	}
+	exclusiveContent  {
+		forRepository {
+			maven {
+				name = "JourneyMap (Public)"
+				url = "https://jm.gserv.me/repository/maven-public/"
+			}
+		}
+		filter {
+			includeGroup("info.journeymap")
+		}
+	}
 }
 
 dependencies {
