@@ -153,10 +153,20 @@ public abstract class UniversalWaystoneScreenHandler extends ScreenHandler {
         this.filteredWaystones.clear();
         for (String waystone : this.sortedWaystones) {
             String name = Waystones.WAYSTONE_STORAGE.getName(waystone).toLowerCase();
-            if ("".equals(this.filter) || (this.searchType == SearchType.STARTS_WITH
-                && name.startsWith(this.filter)) || (this.searchType == SearchType.CONTAINS
-                && name.contains(this.filter))) {
+            if ("".equals(this.filter) || (this.searchType == SearchType.STARTS_WITH && name.startsWith(this.filter))) {
                 filteredWaystones.add(waystone);
+            } else if (this.searchType == SearchType.CONTAINS) {
+                String[] parts = this.filter.split(" ");
+                boolean allContains = true;
+                for (String part : parts) {
+                    if (!name.contains(part)) {
+                        allContains = false;
+                        break;
+                    }
+                }
+                if (allContains) {
+                    filteredWaystones.add(waystone);
+                }
             }
         }
     }
