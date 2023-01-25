@@ -45,6 +45,9 @@ public class UniversalWaystoneScreen extends HandledScreen<ScreenHandler> {
     protected final ArrayList<Button> buttons = new ArrayList<>();
     protected boolean mousePressed;
 
+    private final int desiredScale = Config.getInstance().waystoneGuiScale();
+    private int originalScale = MinecraftClient.getInstance().options.guiScale;
+
     public UniversalWaystoneScreen(ScreenHandler handler, PlayerInventory inventory, Identifier texture, Text title) {
         super(handler, inventory, title);
         this.inventory = inventory;
@@ -110,6 +113,12 @@ public class UniversalWaystoneScreen extends HandledScreen<ScreenHandler> {
             ((UniversalWaystoneScreenHandler) handler).filterWaystones();
         });
         this.addSelectableChild(this.searchField);
+
+        if (client.options.guiScale != desiredScale && desiredScale != 0) {
+            originalScale = client.options.guiScale;
+            client.options.guiScale = desiredScale;
+            client.onResolutionChanged();
+        }
     }
 
     @Override
@@ -202,8 +211,10 @@ public class UniversalWaystoneScreen extends HandledScreen<ScreenHandler> {
 
     @Override
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
+
         super.render(matrices, mouseX, mouseY, delta);
         this.drawMouseoverTooltip(matrices, mouseX, mouseY);
+        MinecraftClient.getInstance().options.guiScale = originalScale;
     }
 
     protected void renderCostItem(MatrixStack matrices, int x, int y) {
@@ -415,6 +426,15 @@ public class UniversalWaystoneScreen extends HandledScreen<ScreenHandler> {
             return true;
         } else {
             return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+        }
+    }
+
+    @Override
+    public void close() {
+        super.close();
+        if (desiredScale != 0 && desiredScale != originalScale) {
+            client.options.guiScale = originalScale;
+            client.onResolutionChanged();
         }
     }
 

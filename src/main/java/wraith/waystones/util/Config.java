@@ -170,6 +170,10 @@ public final class Config {
         return SearchType.fromConfigValue(configData.getCompound("compass").getString("search_at_position"));
     }
 
+    public int waystoneGuiScale() {
+        return configData.getCompound("compass").getInt("waystone_gui_scale");
+    }
+
     public int getIntOrDefault(NbtCompound getFrom, String key, NbtCompound defaults) {
         if (getFrom.contains(key)) {
             return getFrom.getInt(key);
@@ -256,6 +260,7 @@ public final class Config {
 
         NbtCompound compass = new NbtCompound();
         compass.putString("search_at_position", SearchType.CONTAINS.getConfigValue());
+        compass.putInt("waystone_gui_scale", 0);
         defaultConfig.put("compass", compass);
 
         NbtCompound worldgen = new NbtCompound();
@@ -314,7 +319,8 @@ public final class Config {
 
         JsonObject compassJson = new JsonObject();
         NbtCompound compassTag = getCompoundOrDefault(tag, "compass", defaults);
-        compassJson .addProperty("search_at_position", getStringOrDefault(compassTag, "search_at_position", defaults));
+        compassJson.addProperty("search_at_position", getStringOrDefault(compassTag, "search_at_position", defaults));
+        compassJson.addProperty("waystone_gui_scale", getIntOrDefault(compassTag, "waystone_gui_scale", defaults));
         json.add("compass", compassJson);
 
         JsonObject worldgenJson = new JsonObject();
@@ -371,10 +377,22 @@ public final class Config {
 
         NbtCompound defaults = getDefaults();
 
+        NbtCompound compass = new NbtCompound();
+        if (json.has("compass")) {
+            var compassJson = json.get("compass").getAsJsonObject();
+            var defaultCompass = defaults.getCompound("compass");
+            compass.putString("search_at_position", getStringOrDefault(compassJson, "search_at_position", defaultCompass));
+            compass.putInt("waystone_gui_scale", getIntOrDefault(compassJson, "waystone_gui_scale", defaultCompass));
+        } else {
+            ++difference;
+            compass = defaults.getCompound("compass");
+        }
+        tag.put("compass", compass);
+
         NbtCompound worldgen = new NbtCompound();
         if (json.has("worldgen")) {
             var worldgenJson = json.get("worldgen").getAsJsonObject();
-            var defaultWorldgen = new NbtCompound();
+            var defaultWorldgen = defaults.getCompound("worldgen");
             worldgen.putBoolean("generate_in_villages", getBooleanOrDefault(worldgenJson, "generate_in_villages", defaultWorldgen));
             worldgen.putInt("min_per_village", getIntOrDefault(worldgenJson, "min_per_village", defaultWorldgen));
             worldgen.putInt("max_per_village", getIntOrDefault(worldgenJson, "max_per_village", defaultWorldgen));
@@ -388,7 +406,7 @@ public final class Config {
         NbtCompound cost = new NbtCompound();
         if (json.has("teleportation_cost")) {
             var costJson = json.get("teleportation_cost").getAsJsonObject();
-            var defaultCost = new NbtCompound();
+            var defaultCost = defaults.getCompound("teleportation_cost");
             cost.putString("cost_type", getStringOrDefault(costJson, "cost_type", defaultCost));
             cost.putString("cost_item", getStringOrDefault(costJson, "cost_item", defaultCost));
             cost.putInt("base_cost", getIntOrDefault(costJson, "base_cost", defaultCost));
